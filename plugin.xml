@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        id="com.ru.cordova"
+        version="0.0.1-dev">
+
+   <name>BluetoothPrinter</name>
+   <description>Cordova Plugin for Bluetooth Printer</description>
+   <license>Apache 2.0</license>
+   <keywords>cordova, bluetooth, printer, pos, text, barcode, image</keywords>
+
+   <js-module src="www/BluetoothPrinter.js" name="BluetoothPrinter">
+      <clobbers target="BTPrinter" />
+   </js-module>
+
+   <!-- android -->
+   <platform name="android">
+      <config-file target="res/xml/config.xml" parent="/*">
+         <feature name="BluetoothPrinter">
+            <param name="android-package" value="com.ru.cordova.BluetoothPrinter"/>
+         </feature>
+      </config-file>
+
+      <config-file target="AndroidManifest.xml" parent="/*">
+         <uses-permission android:name="android.permission.BLUETOOTH" />
+      </config-file>
+
+      <source-file src="src/android/BluetoothPrinter.java" target-dir="src/com/ru/cordova" />
+
+   </platform>
+</plugin>
