@@ -1,6 +1,7 @@
-package com.ru.cordova;
+package com.ru.cordova.printer.bluetooth;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Hashtable;
@@ -256,4 +257,33 @@ public class BluetoothPrinter extends CordovaPlugin {
 		}
 		return false;
 	}
+
+
+
+	public byte[] getText(String textStr) {
+        // TODO Auto-generated method stubbyte[] send;
+        byte[] send=null;
+        try {
+            send = textStr.getBytes("GBK");
+        } catch (UnsupportedEncodingException e) {
+            send = textStr.getBytes();
+        }
+        return send;
+    }
+
+    public static byte[] hexStringToBytes(String hexString) {
+        hexString = hexString.toLowerCase();
+        String[] hexStrings = hexString.split(" ");
+        byte[] bytes = new byte[hexStrings.length];
+        for (int i = 0; i < hexStrings.length; i++) {
+            char[] hexChars = hexStrings[i].toCharArray();
+            bytes[i] = (byte) (charToByte(hexChars[0]) << 4 | charToByte(hexChars[1]));
+        }
+        return bytes;
+    }
+
+    private static byte charToByte(char c) {
+		return (byte) "0123456789abcdef".indexOf(c);
+	}
+
 }
