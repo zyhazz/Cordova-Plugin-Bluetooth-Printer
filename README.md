@@ -2,9 +2,11 @@
 Cordova Plugin of Bluetooth Printer for Android Platform
 
 
-##Installing the plugin
+
+##Install
 Using the Cordova CLI and NPM, run:
 
 ```
-cordova plugin add https://github.com/mmilidoni/zbtprinter.git
+cordova plugin add https://github.com/srehanuddin/Cordova-Plugin-Bluetooth-Printer.git
 ```
+
