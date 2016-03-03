@@ -2,10 +2,10 @@
 Cordova Plugin of Bluetooth Printer for Android Platform.
 
 ##Support
-    - Text
-    - POS Commands
-    - Image Printing (todo)
-    - Barcode Printing (todo)
+- Text
+- POS Commands
+- Image Printing (todo)
+- Barcode Printing (todo)
 
 ##Install
 Using the Cordova CLI and NPM, run:
