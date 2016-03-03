@@ -73,6 +73,16 @@ public class BluetoothPrinter extends CordovaPlugin {
 			}
 			return true;
 		}
+        else if (action.equals("printPOSCommand")) {
+			try {
+				String msg = args.getString(0);
+                printPOSCommand(callbackContext, hexStringToBytes(msg));
+			} catch (IOException e) {
+				Log.e(LOG_TAG, e.getMessage());
+				e.printStackTrace();
+			}
+			return true;
+		}
 		return false;
 	}
 
@@ -240,6 +250,22 @@ public class BluetoothPrinter extends CordovaPlugin {
 		return false;
 	}
 
+    boolean printPOSCommand(CallbackContext callbackContext, byte[] buffer) throws IOException {
+        try {
+            mmOutputStream.write(buffer);
+            // tell the user data were sent
+			Log.d(LOG_TAG, "Data Sent");
+            callbackContext.success("Data Sent");
+            return true;
+        } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
+        }
+        return false;
+    }
+
 	// disconnect bluetooth printer.
 	boolean disconnectBT(CallbackContext callbackContext) throws IOException {
 		try {
@@ -257,7 +283,6 @@ public class BluetoothPrinter extends CordovaPlugin {
 		}
 		return false;
 	}
-
 
 
 	public byte[] getText(String textStr) {
