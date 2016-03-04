@@ -1,5 +1,5 @@
 # Cordova-Plugin-Bluetooth-Printer
-Cordova Plugin of Bluetooth Printer for Android Platform.
+A cordova plugin for bluetooth printer for android platform, which support text printing and POS printing.
 
 ##Support
 - Text
