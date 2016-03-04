@@ -67,3 +67,16 @@ BTPrinter.disconnect(function(data){
 	console.log(err)
 })
 ```
+
+
+Print simple string
+
+```
+BTPrinter.print((function(data){
+    console.log("Success");
+    console.log(data)
+},function(err){
+    console.log("Error");
+    console.log(err)
+}, "String to Print")
+```
