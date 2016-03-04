@@ -22,9 +22,48 @@ Get list of paired bluetooth printers
 ```
 BTPrinter.list(function(data){
         console.log("Success");
-        console.log(data);
+        console.log(data); \\list of printer in data array
     },function(err){
         console.log("Error");
         console.log(err);
     })
+```
+
+
+Connect printer
+
+```
+BTPrinter.connect(function(data){
+	console.log("Success");
+	console.log(data)
+},function(err){
+	console.log("Error");
+	console.log(err)
+}, "PrinterName")
+```
+
+
+Disconnect printer
+
+```
+BTPrinter.disconnect(function(data){
+	console.log("Success");
+	console.log(data)
+},function(err){
+	console.log("Error");
+	console.log(err)
+}, "PrinterName")
+```
+
+
+Disconnect printer
+
+```
+BTPrinter.disconnect(function(data){
+	console.log("Success");
+	console.log(data)
+},function(err){
+	console.log("Error");
+	console.log(err)
+})
 ```
