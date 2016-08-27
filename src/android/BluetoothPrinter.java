@@ -21,6 +21,17 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Bitmap.Config;
+import android.util.Xml.Encoding;
+import android.util.Base64;
+
 public class BluetoothPrinter extends CordovaPlugin {
 	private static final String LOG_TAG = "BluetoothPrinter";
 	BluetoothAdapter mBluetoothAdapter;
@@ -33,6 +44,8 @@ public class BluetoothPrinter extends CordovaPlugin {
 	int readBufferPosition;
 	int counter;
 	volatile boolean stopWorker;
+
+	Bitmap bitmap;
 
 	public BluetoothPrinter() {}
 
@@ -180,7 +193,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 		return false;
 	}
 
-	// After opening a connection to bluetooth printer device, 
+	// After opening a connection to bluetooth printer device,
 	// we have to listen and check if a data were sent to be printed.
 	void beginListenForData() {
 		try {
@@ -241,6 +254,7 @@ public class BluetoothPrinter extends CordovaPlugin {
 			//Log.d(LOG_TAG, "Data Sent");
 			callbackContext.success("Data Sent");
 			return true;
+
 		} catch (Exception e) {
 			String errMsg = e.getMessage();
 			Log.e(LOG_TAG, errMsg);
@@ -249,6 +263,47 @@ public class BluetoothPrinter extends CordovaPlugin {
 		}
 		return false;
 	}
+
+	//This will send data to bluetooth printer
+    boolean printImage(CallbackContext callbackContext, String msg) throws IOException {
+        try {
+
+            final String encodedString = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHMAAAAyAQMAAABViXZsAAAABlBMVEX///8AAABVwtN+AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAUklEQVQokWP4jwIeMDQwIAOFgefzKqqvaTk0TSJ4S/KaUT4mn8zwPUAS387mx+cHSHzjtDPSBkh8g7ozv1H4CWdno/DT0Pg2qOpJdz+t+Gj5AQCZHKb+0bJmJQAAAABJRU5ErkJggg==";
+            final String pureBase64Encoded = encodedString.substring(encodedString.indexOf(",")  + 1);
+
+            final byte[] decodedBytes = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+
+            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+
+            bitmap = decodedBitmap;
+
+            int mWidth = bitmap.getWidth();
+            int mHeight = bitmap.getHeight();
+            //bitmap=resizeImage(bitmap, imageWidth * 8, mHeight);
+            bitmap=resizeImage(bitmap, 48 * 8, mHeight);
+
+
+            byte[]  bt =getBitmapData(bitmap);
+
+            bitmap.recycle();
+
+            mmOutputStream.write(bt);
+
+            // tell the user data were sent
+            //Log.d(LOG_TAG, "Data Sent");
+            callbackContext.success("Data Sent");
+            return true;
+
+
+        } catch (Exception e) {
+            String errMsg = e.getMessage();
+            Log.e(LOG_TAG, errMsg);
+            e.printStackTrace();
+            callbackContext.error(errMsg);
+        }
+        return false;
+    }
+
 
     boolean printPOSCommand(CallbackContext callbackContext, byte[] buffer) throws IOException {
         try {
@@ -310,5 +365,174 @@ public class BluetoothPrinter extends CordovaPlugin {
     private static byte charToByte(char c) {
 		return (byte) "0123456789abcdef".indexOf(c);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public byte[] getImage(Bitmap bitmap) {
+        // TODO Auto-generated method stub
+        int mWidth = bitmap.getWidth();
+        int mHeight = bitmap.getHeight();
+        bitmap=resizeImage(bitmap, 48 * 8, mHeight);
+        //bitmap=resizeImage(bitmap, imageWidth * 8, mHeight);
+        /*
+        mWidth = bitmap.getWidth();
+        mHeight = bitmap.getHeight();
+        int[] mIntArray = new int[mWidth * mHeight];
+        bitmap.getPixels(mIntArray, 0, mWidth, 0, 0, mWidth, mHeight);
+        byte[]  bt =getBitmapData(mIntArray, mWidth, mHeight);*/
+
+        byte[]  bt =getBitmapData(bitmap);
+
+
+        /*try {//?????????????????
+            createFile("/sdcard/demo.txt",bt);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
+
+
+        ////byte[]  bt =StartBmpToPrintCode(bitmap);
+
+        bitmap.recycle();
+        return bt;
+    }
+
+    private static Bitmap resizeImage(Bitmap bitmap, int w, int h) {
+        Bitmap BitmapOrg = bitmap;
+        int width = BitmapOrg.getWidth();
+        int height = BitmapOrg.getHeight();
+
+        if(width>w)
+        {
+            float scaleWidth = ((float) w) / width;
+            float scaleHeight = ((float) h) / height+24;
+            Matrix matrix = new Matrix();
+            matrix.postScale(scaleWidth, scaleWidth);
+            Bitmap resizedBitmap = Bitmap.createBitmap(BitmapOrg, 0, 0, width,
+                    height, matrix, true);
+            return resizedBitmap;
+        }else{
+            Bitmap resizedBitmap = Bitmap.createBitmap(w, height+24, Config.RGB_565);
+            Canvas canvas = new Canvas(resizedBitmap);
+            Paint paint = new Paint();
+            canvas.drawColor(Color.WHITE);
+            canvas.drawBitmap(bitmap, (w-width)/2, 0, paint);
+            return resizedBitmap;
+        }
+    }
+
+    public static byte[] getBitmapData(Bitmap bitmap) {
+		byte temp = 0;
+		int j = 7;
+		int start = 0;
+		if (bitmap != null) {
+			int mWidth = bitmap.getWidth();
+			int mHeight = bitmap.getHeight();
+
+			int[] mIntArray = new int[mWidth * mHeight];
+			bitmap.getPixels(mIntArray, 0, mWidth, 0, 0, mWidth, mHeight);
+			bitmap.recycle();
+			byte []data=encodeYUV420SP(mIntArray, mWidth, mHeight);
+			byte[] result = new byte[mWidth * mHeight / 8];
+			for (int i = 0; i < mWidth * mHeight; i++) {
+				temp = (byte) ((byte) (data[i] << j) + temp);
+				j--;
+				if (j < 0) {
+					j = 7;
+				}
+				if (i % 8 == 7) {
+					result[start++] = temp;
+					temp = 0;
+				}
+			}
+			if (j != 7) {
+				result[start++] = temp;
+			}
+
+			int aHeight = 24 - mHeight % 24;
+			int perline = mWidth / 8;
+			byte[] add = new byte[aHeight * perline];
+			byte[] nresult = new byte[mWidth * mHeight / 8 + aHeight * perline];
+			System.arraycopy(result, 0, nresult, 0, result.length);
+			System.arraycopy(add, 0, nresult, result.length, add.length);
+
+			byte[] byteContent = new byte[(mWidth / 8 + 4)
+					* (mHeight + aHeight)];// ???????
+			byte[] bytehead = new byte[4];// ÿ?????
+			bytehead[0] = (byte) 0x1f;
+			bytehead[1] = (byte) 0x10;
+			bytehead[2] = (byte) (mWidth / 8);
+			bytehead[3] = (byte) 0x00;
+			for (int index = 0; index < mHeight + aHeight; index++) {
+				System.arraycopy(bytehead, 0, byteContent, index
+						* (perline + 4), 4);
+				System.arraycopy(nresult, index * perline, byteContent, index
+						* (perline + 4) + 4, perline);
+			}
+			return byteContent;
+		}
+		return null;
+
+	}
+
+	public static byte[] encodeYUV420SP(int[] rgba, int width, int height) {
+		final int frameSize = width * height;
+		byte[] yuv420sp=new byte[frameSize];
+		int[] U, V;
+		U = new int[frameSize];
+		V = new int[frameSize];
+		final int uvwidth = width / 2;
+		int r, g, b, y, u, v;
+		int bits = 8;
+		int index = 0;
+		int f = 0;
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				r = (rgba[index] & 0xff000000) >> 24;
+				g = (rgba[index] & 0xff0000) >> 16;
+				b = (rgba[index] & 0xff00) >> 8;
+				// rgb to yuv
+				y = ((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
+				u = ((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
+				v = ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
+				// clip y
+				// yuv420sp[index++] = (byte) ((y < 0) ? 0 : ((y > 255) ? 255 :
+				// y));
+				byte temp = (byte) ((y < 0) ? 0 : ((y > 255) ? 255 : y));
+				yuv420sp[index++] = temp > 0 ? (byte) 1 : (byte) 0;
+
+				// {
+				// if (f == 0) {
+				// yuv420sp[index++] = 0;
+				// f = 1;
+				// } else {
+				// yuv420sp[index++] = 1;
+				// f = 0;
+				// }
+
+				// }
+
+			}
+
+		}
+		f = 0;
+		return yuv420sp;
+	}
+
 
 }

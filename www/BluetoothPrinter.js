@@ -13,6 +13,9 @@ var BTPrinter = {
    print: function(fnSuccess, fnError, str){
       exec(fnSuccess, fnError, "BluetoothPrinter", "print", [str]);
    },
+   printImage: function(fnSuccess, fnError, str){
+      exec(fnSuccess, fnError, "BluetoothPrinter", "printImage", [str]);
+   },
    printPOSCommand: function(fnSuccess, fnError, str){
       exec(fnSuccess, fnError, "BluetoothPrinter", "printPOSCommand", [str]);
    }
