@@ -72,7 +72,7 @@ BTPrinter.disconnect(function(data){
 Print simple string
 
 ```
-BTPrinter.print((function(data){
+BTPrinter.printText(function(data){
     console.log("Success");
     console.log(data)
 },function(err){
@@ -82,10 +82,23 @@ BTPrinter.print((function(data){
 ```
 
 
+Print image
+
+```
+BTPrinter.print(function(data){
+    console.log("Success");
+    console.log(data)
+},function(err){
+    console.log("Error");
+    console.log(err)
+}, "Base64 String of Image")
+```
+
+
 POS printing
 
 ```
-BTPrinter.printPOSCommand((function(data){
+BTPrinter.printPOSCommand(function(data){
     console.log("Success");
     console.log(data)
 },function(err){
