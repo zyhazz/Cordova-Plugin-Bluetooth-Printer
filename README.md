@@ -22,7 +22,7 @@ Get list of paired bluetooth printers
 ```
 BTPrinter.list(function(data){
         console.log("Success");
-        console.log(data); \\list of printer in data array
+        console.log(data); //list of printer in data array
     },function(err){
         console.log("Error");
         console.log(err);
@@ -83,6 +83,16 @@ BTPrinter.printText(function(data){
 
 
 Print image
+
+```
+BTPrinter.printText(function(data){
+    console.log("Success");
+    console.log(data)
+},function(err){
+    console.log("Error");
+    console.log(err)
+}, "Image Base64 String")
+```
 
 ```
 BTPrinter.print(function(data){
