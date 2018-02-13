@@ -1,0 +1,22 @@
+{
+  "name": "cordova-plugin-bluetooth-printer ",
+  "version": "1.0.0",
+  "description": "Cordova Bluetooth Printer Plugin",
+  "cordova": {
+    "id": "cordova-plugin-bluetooth-printer",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zyhazz/Cordova-Plugin-Bluetooth-Printer.git"
+  },
+  "keywords": [
+    "cordova",
+    "bluetooth",
+    "print"
+  ],
+  "author": "zyhazz",
+  "license": "zyhazz"
+}
